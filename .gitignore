@@ -1,0 +1,5 @@
+.vscode/
+.venv/
+build/
+data/
+docker_files/
