@@ -1,0 +1,25 @@
+<package format="3">
+  <name>fs_backend</name>
+  <version>0.0.1</version>
+  <description>Focus stacking backend</description>
+  <maintainer email="dominikslomma@student.uts.edu.au">Dominik Slomma</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- Keine ROS-Komponenten nötig -->
+  <depend>OpenCV</depend>
+
+   <exec_depend>launch</exec_depend>
+   <exec_depend>launch_ros</exec_depend>
+
+<build_depend>std_msgs</build_depend>
+<exec_depend>std_msgs</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+  
+  
+</package>
+

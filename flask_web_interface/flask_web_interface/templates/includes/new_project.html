@@ -1,0 +1,71 @@
+{% extends 'layouts/base.html' %}
+
+{% block main %}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">New Project</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item active">New Project</li>
+    </ol>
+
+
+<form action="{{ url_for('create_project') }}" method="POST" enctype="multipart/form-data">
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Project Configuration
+        </div>
+
+        <div class="card-body mt-0 mb-0">
+            <label for="projectName" class="form-label">Projektname</label>
+            <input type="text" class="form-control" id="projectName" name="projectName" placeholder="New Project Name">
+        </div>
+
+        <div class="card-body mt-2 mb-2">
+            <label for="images" class="form-label">Upload Images</label>
+            <input type="file" class="form-control" id="images" name="images" multiple>
+        </div>
+
+        <div class="card-body mt-2 mb-2">
+            <label for="images" class="form-label">Laplace Filter Size</label>
+            <input type="number" class="form-control" id="LaplaceFilterSize" name="LaplaceFilterSize" value="5" min="1" max="100">
+        </div>
+
+        <div class="card-body mt-2 mb-2">
+            <label for="images" class="form-label">Number of Images in Pyramid</label>
+            <input type="number" class="form-control" id="NumberofImagesinPyramid" name="NumberofImagesinPyramid" value="1" min="1" max="100">
+        </div>
+
+        <div class="card-body mt-2 mb-2">
+            <label for="images" class="form-label">Patch-Size Sharpness: X</label>
+            <input type="number" class="form-control" id="PatchSizeX" name="PatchSizeX" value="5" min="1" max="100">
+        </div>
+
+        <div class="card-body mt-2 mb-2">
+            <label for="images" class="form-label">Patch-Size Sharpness: Y</label>
+            <input type="number" class="form-control" id="PatchSizeY" name="PatchSizeY" value="5" min="1" max="100">
+        </div>
+
+        <div class="card-body mt-2 mb-2">
+            <label for="images" class="form-label">Image Resize</label>
+            <input type="number" class="form-control" id="ImgResize" name="ImgResize" value="1" min="1" max="100">
+        </div>
+
+        <div class="card-body mt-2 mb-2">
+            <label for="images" class="form-label">Z-Spacing</label>
+            <input type="number" class="form-control" id="z_spacing" name="z_spacing" value="1" min="1" max="100">
+        </div>
+
+        <div class="card-body mt-2 mb-2 text-end">
+            <button type="submit" class="btn btn-primary" name="action" value="save">Save</button>
+            <button type="submit" class="btn btn-primary" name="action" value="save_run">Save & Run</button>
+        </div>
+    </div>
+</form>
+
+
+
+
+</div>
+
+{% endblock %}
