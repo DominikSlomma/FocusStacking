@@ -28,11 +28,12 @@ RUN git clone https://github.com/DominikSlomma/FocusStacking
 
 RUN mkdir -p /home/ws/src/flask_web_interface/
 RUN mkdir -p /home/ws/src/fs_backend/
+RUN mkdir -p /home/ws/
 
 RUN cp -r /tmp/FocusStacking/flask_web_interface/* /home/ws/src/flask_web_interface/
 RUN cp -r /tmp/FocusStacking/fs_backend/* /home/ws/src/fs_backend/
 
-RUN cp -r /tmp/FocusStacking/update.sh /home/ws/
+RUN cp /tmp/FocusStacking/update.sh /home/ws/
 
 
 RUN rm -r  /tmp/FocusStacking
