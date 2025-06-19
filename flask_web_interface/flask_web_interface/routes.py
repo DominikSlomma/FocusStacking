@@ -20,7 +20,15 @@ if 'ROS_DOMAIN_ID' not in os.environ:
     
 rclpy.init()
 
-
+def shutdown_server():
+    #print("in hier")
+    subprocess.run(['/home/ws/update.sh'], check=True)
+    import sys
+    sys.exit(1)
+    #func = request.environ.get('werkzeug.server.shutdown')
+    #if func is None:
+    #    raise RuntimeError('Not running with the Werkzeug Server')
+    #func()
 
 def jpg_files_exist(dir_path):
     if not os.path.isdir(dir_path):
@@ -65,11 +73,11 @@ def init_routes(app):
    def serve_image(projectname, filename):
        send = request.args.get('send', 'false').lower() == 'true'
        directory = os.path.join("/home/ws/" + "projects", projectname, "output/")
-       print(directory)
-       print(filename)
+       #print(directory)
+       #print(filename)
        full_path = os.path.join(directory, filename)
 
-       print(f"Full path exists? {os.path.isfile(full_path)}")
+       #print(f"Full path exists? {os.path.isfile(full_path)}")
        return send_from_directory(directory, filename, as_attachment=send)
        
    @app.errorhandler(404)
@@ -176,8 +184,8 @@ def init_routes(app):
            data["output_path_sharpness"] = os.path.join(output_dir, "sharpness.jpg")
            data["output_path_depth"] = os.path.join(output_dir, "depth.jpg")
             
-           print(data["output_path_sharpness"])
-           print(data["output_path_depth"])
+           #print(data["output_path_sharpness"])
+           #print(data["output_path_depth"])
            # Status: Init, Running, Done
            data["status"] = "Init"
 
@@ -185,7 +193,7 @@ def init_routes(app):
            action = request.form.get("action")
         
            if action == "save_run":
-               print("dassdasd\n\n\n\n\n\n\n\n")
+               #print("dassdasd\n\n\n\n\n\n\n\n")
                start_ros_launch(data)
                data["status"] = "running"
                project_overview[projectname] = "running"
@@ -225,7 +233,7 @@ def init_routes(app):
 
    @app.route('/update_system')
    def update_system():
-       return redirect(url_for('index'))
+       shutdown_server()
 
    @app.route('/index')
    @app.route('/')
@@ -253,8 +261,8 @@ def init_routes(app):
             continue
          node_name = "/cpu_node_" + name
          res = check_node_exists(node_name)
-         print(node_name)
-         print(res)
+         #print(node_name)
+         #print(res)
          if not res:
             status[i] = "stopped"
             

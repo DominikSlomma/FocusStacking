@@ -18,9 +18,24 @@ RUN apt update && apt install -y ros-humble-desktop ros-dev-tools
 RUN apt install -y build-essential cmake git python3-pip python3-colcon-common-extensions
 RUN apt install -y python3-flask
 RUN apt install -y libomp-dev
+RUN apt install -y git
 
 #COPY ./flask_web_interface/ /home/ws/src/flask_web_interface/
 #COPY ./fs_backend/ /home/ws/src/fs_backend/
+
+WORKDIR /tmp/
+RUN git clone https://github.com/DominikSlomma/FocusStacking
+
+RUN mkdir -p /home/ws/src/flask_web_interface/
+RUN mkdir -p /home/ws/src/fs_backend/
+
+RUN cp -r /tmp/FocusStacking/flask_web_interface/* /home/ws/src/flask_web_interface/
+RUN cp -r /tmp/FocusStacking/fs_backend/* /home/ws/src/fs_backend/
+
+RUN cp -r /tmp/FocusStacking/update.sh /home/ws/
+
+
+RUN rm -r  /tmp/FocusStacking
 
 WORKDIR /home/ws
 

@@ -22,12 +22,17 @@
 docker build -t focus_stacking:latest .
 
 ## For development
-docker run -it -v /path_to_webserver/flask_web_interface/:/home/ws/src/flask_web_interface/ -v /path_to_backend/fs_backend/:/home/ws/src/fs_backend/ -p 5000:5000 focus_stacking:latest
+docker run -it --name focus_stacking -v /path_to_webserver/flask_web_interface/:/home/ws/src/flask_web_interface/ -v /path_to_backend/fs_backend/:/home/ws/src/fs_backend/ -p 5000:5000 focus_stacking:latest
 
 ## For release
 
+docker run -it --name focus_stacking -p 5000:5000 focus_stacking:latest
 
+docker start -ai focus_stacking
+docker stop -ai focus_stacking
 
+# Important!
+Do not use the commands -ai or -it when not interacting with the cli. Please use -d
 
 
 
