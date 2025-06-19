@@ -1,0 +1,109 @@
+{% extends 'layouts/base.html' %}
+
+{% block main %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4">{{ data.projectname }}</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item active">{{ data.projectname }}</li>
+    </ol>
+
+    <form action="{{ url_for('create_project') }}" method="POST" enctype="multipart/form-data">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Project Configuration
+            </div>
+
+            <div class="card-body mt-0 mb-0">
+                <label for="projectName" class="form-label">Projektname</label>
+                <input type="text" class="form-control" id="projectName" name="projectName" value="{{ data.projectname }}" placeholder="New Project Name">
+            </div>
+
+            <div class="card-body mt-2 mb-2">
+                <label for="images" class="form-label">Upload Images</label>
+                <input type="file" class="form-control" id="images" name="images" multiple>
+
+                <ul class="mt-2">
+                    {% for path in data.images %}
+                        <li>{{ path.replace('\\', '/') }}</li>
+                        {# Alternativ nur Dateiname anzeigen: #}
+                        {# <li>{{ path.replace('\\', '/').split('/')[-1] }}</li> #}
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="card-body mt-2 mb-2">
+                <label for="LaplaceFilterSize" class="form-label">Laplace Filter Size</label>
+                <input type="number" class="form-control" id="LaplaceFilterSize" name="LaplaceFilterSize" value="{{ data.LaplaceFilterSize }}" min="1" max="100">
+            </div>
+
+            <div class="card-body mt-2 mb-2">
+                <label for="NumberofImagesinPyramid" class="form-label">Number of Images in Pyramid</label>
+                <input type="number" class="form-control" id="NumberofImagesinPyramid" name="NumberofImagesinPyramid" value="{{ data.NumberofImagesinPyramid or 1 }}" min="1" max="100">
+            </div>
+
+            <div class="card-body mt-2 mb-2">
+                <label for="PatchSizeX" class="form-label">Patch-Size Sharpness: X</label>
+                <input type="number" class="form-control" id="PatchSizeX" name="PatchSizeX" value="{{ data.PatchSizeX or 3 }}" min="1" max="100">
+            </div>
+
+            <div class="card-body mt-2 mb-2">
+                <label for="PatchSizeY" class="form-label">Patch-Size Sharpness: Y</label>
+                <input type="number" class="form-control" id="PatchSizeY" name="PatchSizeY" value="{{ data.PatchSizeY or 3 }}" min="1" max="100">
+            </div>
+
+            <div class="card-body mt-2 mb-2">
+                <label for="Resize" class="form-label">Image Resize</label>
+                <input type="number" class="form-control" id="Resize" name="ImgResize" value="{{ data.ImgResize or 100 }}" min="1" max="100">
+            </div>
+
+            <div class="card-body mt-2 mb-2">
+                <label for="z_spacing" class="form-label">Z-Spacing</label>
+                <input type="number" class="form-control" id="z_spacing" name="z_spacing" value="{{ data.z_spacing or 1 }}" min="1" max="100">
+            </div>
+
+            <div class="card-body mt-2 mb-2 text-end">
+                <button type="submit" class="btn btn-primary" name="action" value="save">Save</button>
+                <button type="submit" class="btn btn-primary" name="action" value="save_run">Save & Run</button>
+            </div>
+        </div>
+    </form>
+
+    {% if exist %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Project Output Images
+        </div>
+
+        <div class="container mt-4">
+            <div class="row">
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card">
+                        <img src="{{ url_for('serve_image', projectname=data.projectname, filename='sharpness.jpg', send='False') }}" alt="Bild">
+                        <div class="card-body text-center">
+                            <a href="{{ url_for('serve_image', projectname=data.projectname, filename='sharpness.jpg', send='True') }}" download>Download</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card">
+                        <img src="{{ url_for('serve_image', projectname=data.projectname, filename='depth.jpg', send='False') }}" alt="Bild">
+                        <div class="card-body text-center">
+                            <a href="{{ url_for('serve_image', projectname=data.projectname, filename='depth.jpg', send='True') }}" download>Download</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-warning mt-4" role="alert">
+        No Images Found
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
+

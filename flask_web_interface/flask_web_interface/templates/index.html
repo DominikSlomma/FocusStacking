@@ -1,0 +1,97 @@
+{% extends 'layouts/base.html' %}
+
+{% block main %}
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Dashboard</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item active">Dashboard</li>
+    </ol>
+    <div class="row">
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-primary text-white mb-4">
+
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white fw-bold stretched-link" href="{{ url_for('new_project') }}" style="font-weight: bold; font-size: 28px; text-decoration: none ;">New Project</a>
+                    <div class="text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+        <!--
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-warning text-white mb-4">
+                <div class="card-body">Warning Card</div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="#">View Details</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-success text-white mb-4">
+                <div class="card-body">Success Card</div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="#">View Details</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-danger text-white mb-4">
+                <div class="card-body">Danger Card</div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="#">View Details</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+        -->
+    </div>
+    <div class="row">
+        {% for i in range(session.projectnames | length) %}
+          {% set name = session.projectnames[i] %}
+          {% set stat = session.status[i] %}
+        <div class="container-fluid">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-chart-bar me-1"></i>
+                    Project {{ name }}
+                </div>
+                <div class="card-body">
+                    <!-- Flex Container: links Projektname + Button, rechts Status -->
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                        <h5 class="mb-0 me-3">{{ name  }}</h5>
+                        <form method="POST" action="{{ url_for('open_project') }}">
+                                <button type="submit" class="btn btn-primary" name="projectname" value="{{ name }}">Open</button>
+                        </form>
+                        </div>
+                        <h5 class="mb-0">
+                      <span class="status-dot
+                        {% if stat == 'init' %}status-notstarted
+                        {% elif stat == 'running' %}status-running
+                        {% elif stat == 'stopped' %}status-stopped
+                        {% endif %} ms-2">
+                      </span>
+                          Status:
+                      {% if stat == 'init' %}
+                        Not Started
+                      {% elif stat == 'running' %}
+                        Running
+                      {% elif stat == 'stopped' %}
+                        Stopped
+                      {% endif %}
+                    </h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+
+    </div>
+
+
+</div>
+
+{% endblock %}

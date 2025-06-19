@@ -2,4 +2,4 @@
 .venv/
 build/
 data/
-docker_files/
+.gitignore
