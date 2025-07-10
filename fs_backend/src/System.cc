@@ -1,4 +1,7 @@
 #include "System.h"
+#include <string>
+
+#include <filesystem>
 
 #define  TEST std::cout << "Test\n";
 
@@ -26,7 +29,7 @@ namespace fost {
         // Do I need here more?
 RCLCPP_INFO(this->get_logger(), "num_pyramid_: %d", num_pyramid_);
 RCLCPP_INFO(this->get_logger(), "z_spacing_: %f", z_spacing_);
-RCLCPP_INFO(this->get_logger(), "resize_factor: %f", resize_factor);
+RCLCPP_INFO(this->get_logger(), "resize_factor: %d", resize_factor);
 RCLCPP_INFO(this->get_logger(), "kernel_size_laplacian_: %d", kernel_size_laplacian_);
 RCLCPP_INFO(this->get_logger(), "sharpness_patch_size_x_: %d", sharpness_patch_size_x_);
 RCLCPP_INFO(this->get_logger(), "sharpness_patch_size_y_: %d", sharpness_patch_size_y_);
@@ -73,7 +76,7 @@ RCLCPP_INFO(this->get_logger(), "vla");
 
                     // Berechne die Grenzen des Patches
                     int half_patch_x = patch_size_x / 2;  // 5x5 Patch, also 2 Pixel nach oben, unten, links und rechts
-                    int half_patch_y= patch_size_x / 2;  // 5x5 Patch, also 2 Pixel nach oben, unten, links und rechts
+                    int half_patch_y= patch_size_y / 2;  // 5x5 Patch, also 2 Pixel nach oben, unten, links und rechts
                     int x_min = std::max(0, x - half_patch_x);
                     int x_max = std::min( x + half_patch_x + 1, lap.cols);
                     int y_min = std::max(0, y - half_patch_y);
@@ -161,20 +164,33 @@ RCLCPP_INFO(this->get_logger(), "vla");
     void System::create_depth_map() {
         depth_img_.create(height_, width_, CV_64F);
         #pragma omp parallel for collapse(2)
-        for(int x = 0; x < width_; x++) {
-            for(int y = 0; y < height_; y++) {
+        for (int x = 0; x < width_; x++) {
+            for (int y = 0; y < height_; y++) {
                 depth_img_.at<double>(y,x) = index_img_.at<int>(y,x) * z_spacing_;
             }
         }
 
+        cv::Mat image8U, depth_val;
+        depth_val = depth_img_.clone();  // <- enthält echte Tiefenwerte
 
-        std::cout << depth_img_.size() << std::endl;
-        std::cout << index_img_.size() << std::endl;
-        cv::Mat image8U;
+        // Normiertes Bild für jpg
         cv::normalize(depth_img_, depth_img_, 0, 255, cv::NORM_MINMAX);
         depth_img_.convertTo(image8U, CV_8U);
+        RCLCPP_INFO(this->get_logger(), "depth_img_ empty? %s", depth_img_.empty() ? "yes" : "no");
+
+        // JPG schreiben
         cv::imwrite(output_path_depth_, image8U);
+
+        // EXR-Pfad erzeugen
+        std::filesystem::path exr_path = output_path_depth_;
+        exr_path.replace_extension(".exr");
+
+        // Depth als 32-bit float EXR schreiben
+        depth_val.convertTo(depth_val, CV_32F);
+        RCLCPP_INFO(this->get_logger(), "exr_path? %s", exr_path.string().c_str());
+        cv::imwrite(exr_path.string(), depth_val);
     }
+
 
     void System::calc_laplacian(cv::Mat img, cv::Mat &lap, int kernel_size) {
         cv::Laplacian(img, lap, CV_64F, kernel_size);
