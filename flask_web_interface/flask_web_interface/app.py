@@ -7,8 +7,10 @@ class Config:
     PROJECTS_BASE = "projects"
     INDEX_FILE = "projects_index.yaml"
     # Optional: absolute Pfade für templates/static lieber hier zentral
-    TEMPLATE_FOLDER = "/home/anonym/Schreibtisch/PhD/code/FocusStacking/flask_web_interface/flask_web_interface/templates"
-    STATIC_FOLDER   = "/home/anonym/Schreibtisch/PhD/code/FocusStacking/flask_web_interface/flask_web_interface/static"
+    # TEMPLATE_FOLDER = "/home/anonym/Schreibtisch/PhD/code/FocusStacking/flask_web_interface/flask_web_interface/templates"
+    # STATIC_FOLDER   = "/home/anonym/Schreibtisch/PhD/code/FocusStacking/flask_web_interface/flask_web_interface/static"
+    TEMPLATE_FOLDER = "/home/ws/src/flask_web_interface/flask_web_interface/templates"
+    STATIC_FOLDER   = "/home/ws/src/flask_web_interface/flask_web_interface/static"
     ROS_DOMAIN_ID   = "0"  # überschreibbar via env
 
 def create_app():
