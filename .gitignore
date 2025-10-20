@@ -3,3 +3,12 @@
 build/
 data/
 .gitignore
+install/
+projects/
+log/
+projects_index.*
+Todo.txt
+dockerfile_old
+launch_params_*
+docker-compose.yml
+old/

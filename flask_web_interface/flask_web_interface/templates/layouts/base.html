@@ -12,6 +12,106 @@
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        {% if poll_status %}
+            <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+            <!-- <script>
+            (function(){
+            function renderBadge(status){
+                const st=(status||'').trim().toLowerCase();
+                if(st==='running') return '<span class="badge bg-warning text-dark">Running</span>';
+                if(st==='done')    return '<span class="badge bg-success">Done</span>';
+                if(st==='failed')  return '<span class="badge bg-danger">Failed</span>';
+                return '<span class="badge bg-dark">Not Started</span>';
+            }
+            function renderText(status){
+                const st=(status||'').trim().toLowerCase();
+                if(st==='running') return 'Status: Running';
+                if(st==='done')    return 'Status: Done';
+                if(st==='failed')  return 'Status: Failed';
+                return 'Status: Not Started';
+            }
+            function refreshStatuses(){
+                $.getJSON('{{ url_for("web.api_projects_status") }}')
+                .done(function(data){
+                    (data.items||[]).forEach(function(item){
+                    $('#badge-'+item.slug).html(renderBadge(item.status));
+                    $('#statustext-'+item.slug).text(renderText(item.status));
+                    });
+                });
+            }
+            // doppelte Timer vermeiden (falls Seite neu geladen / partials)
+            if (window.__statusPoller) clearInterval(window.__statusPoller);
+            window.__statusPoller = setInterval(refreshStatuses, 2000);
+            $(refreshStatuses);
+            document.addEventListener('visibilitychange', function(){
+                if(document.visibilityState==='visible') refreshStatuses();
+            });
+            })();
+            </script> -->
+            <script>
+            (function () {
+            function renderBadge(status) {
+                const st = (status || '').trim().toLowerCase();
+                if (st === 'running')  return '<span class="badge bg-warning text-dark">Running</span>';
+                if (st === 'done')     return '<span class="badge bg-success">Done</span>';
+                if (st === 'failed')   return '<span class="badge bg-danger">Failed</span>';
+                return '<span class="badge bg-dark">Not Started</span>';
+            }
+            function renderText(status, progress) {
+                const st = (status || '').trim().toLowerCase();
+                if (st === 'running')  {
+                const pct = (typeof progress === 'number') ? ` ${Math.round(progress)}%` : '';
+                return `Status: Running${pct ? ' — ' + pct : ''}`;
+                }
+                if (st === 'done')     return 'Status: Done';
+                if (st === 'failed')   return 'Status: Failed';
+                return 'Status: Not Started';
+            }
+
+            async function refreshStatuses() {
+                try {
+                const resp = await fetch('{{ url_for("web.api_projects_status") }}', { cache: 'no-store' });
+                if (!resp.ok) return;
+                const data = await resp.json();
+                (data.items || []).forEach(item => {
+                    const slug = item.slug;
+                    const status = item.status;
+                    const progress = item.progress;
+
+                    // Badge
+                    const badgeHost = document.getElementById('badge-' + slug);
+                    if (badgeHost) badgeHost.innerHTML = renderBadge(status);
+
+                    // Status-Text
+                    const textHost = document.getElementById('statustext-' + slug);
+                    if (textHost) textHost.textContent = renderText(status, progress);
+
+                    // Optional: nur die Prozent-Spanne separat updaten (falls du die oben separat drin hast)
+                    const progHost = document.getElementById('progress-' + slug);
+                    if (progHost) {
+                    if ((status || '').toLowerCase() === 'running' && typeof progress === 'number') {
+                        progHost.textContent = ` — ${Math.round(progress)}%`;
+                    } else {
+                        progHost.textContent = '';
+                    }
+                    }
+                });
+                } catch (e) {}
+            }
+
+            if (window.__statusPoller) clearInterval(window.__statusPoller);
+            window.__statusPoller = setInterval(refreshStatuses, 2000);
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') refreshStatuses();
+            });
+            refreshStatuses();
+            })();
+            </script>
+
+        {% endif %}
+
     </head>
     <body class="sb-nav-fixed">
         {% include 'includes/topnavigation.html' %}

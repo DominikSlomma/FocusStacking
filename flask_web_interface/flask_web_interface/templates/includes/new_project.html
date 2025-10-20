@@ -1,71 +1,173 @@
 {% extends 'layouts/base.html' %}
-
 {% block main %}
 
 <div class="container-fluid px-4">
-    <h1 class="mt-4">New Project</h1>
-    <ol class="breadcrumb mb-4">
-        <li class="breadcrumb-item active">New Project</li>
-    </ol>
+  <h1 class="mt-4">New Project</h1>
+  <ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item active">New Project</li>
+  </ol>
 
-
-<form action="{{ url_for('create_project') }}" method="POST" enctype="multipart/form-data">
+  <form id="project-form" action="{{ url_for('web.create_project') }}" method="POST" enctype="multipart/form-data">
     <div class="card mb-4">
-        <div class="card-header">
-            <i class="fas fa-table me-1"></i>
-            Project Configuration
+      <div class="card-header">
+        <i class="fas fa-table me-1"></i>
+        Project Configuration
+      </div>
+
+      <div class="card-body mt-0 mb-0">
+        <label for="projectName" class="form-label">Projektname</label>
+        <input type="text" class="form-control" id="projectName" name="projectName" placeholder="New Project Name" required>
+      </div>
+
+      <!-- Upload-Zeile -->
+      <div class="card-body mt-2 mb-2">
+        <label for="images" class="form-label">Upload Images</label>
+        <div class="d-flex gap-2">
+          <input type="file" class="form-control" id="images" name="images" multiple>
+          <button type="button" id="btn-upload" class="btn btn-outline-primary">Upload</button>
         </div>
 
-        <div class="card-body mt-0 mb-0">
-            <label for="projectName" class="form-label">Projektname</label>
-            <input type="text" class="form-control" id="projectName" name="projectName" placeholder="New Project Name">
+        <!-- Fortschritt -->
+        <div class="progress mt-2" style="height: 22px; display:none;" id="upload-progress-wrap">
+          <div class="progress-bar" role="progressbar" id="upload-progress" style="width: 0%">0%</div>
         </div>
 
-        <div class="card-body mt-2 mb-2">
-            <label for="images" class="form-label">Upload Images</label>
-            <input type="file" class="form-control" id="images" name="images" multiple>
-        </div>
+        <small class="text-muted d-block mt-2">
+          Optionaler Vorab-Upload mit Fortschrittsanzeige. Du kannst auch ohne “Upload” direkt speichern (ohne Fortschrittsanzeige).
+        </small>
 
-        <div class="card-body mt-2 mb-2">
-            <label for="images" class="form-label">Laplace Filter Size</label>
-            <input type="number" class="form-control" id="LaplaceFilterSize" name="LaplaceFilterSize" value="5" min="1" max="100">
-        </div>
+        <!-- Liste bereits hochgeladener Dateien -->
+        <ul class="mt-2" id="uploaded-list" style="display:none;"></ul>
 
-        <div class="card-body mt-2 mb-2">
-            <label for="images" class="form-label">Number of Images in Pyramid</label>
-            <input type="number" class="form-control" id="NumberofImagesinPyramid" name="NumberofImagesinPyramid" value="1" min="1" max="100">
-        </div>
+        <!-- Hidden: upload_id + serverseitig gespeicherte Pfade -->
+        <input type="hidden" name="upload_id" id="upload_id">
+        <textarea name="uploaded_paths" id="uploaded_paths" hidden></textarea>
+      </div>
 
-        <div class="card-body mt-2 mb-2">
-            <label for="images" class="form-label">Patch-Size Sharpness: X</label>
-            <input type="number" class="form-control" id="PatchSizeX" name="PatchSizeX" value="5" min="1" max="100">
-        </div>
+      <!-- Parameter -->
+      <div class="card-body mt-2 mb-2">
+        <label for="LaplaceFilterSize" class="form-label">Laplace Filter Size</label>
+        <input type="number" class="form-control" id="LaplaceFilterSize" name="LaplaceFilterSize" value="5" min="1" max="100">
+      </div>
+      <div class="card-body mt-2 mb-2">
+        <label for="NumberofImagesinPyramid" class="form-label">Number of Images in Pyramid</label>
+        <input type="number" class="form-control" id="NumberofImagesinPyramid" name="NumberofImagesinPyramid" value="1" min="1" max="100">
+      </div>
+      <div class="card-body mt-2 mb-2">
+        <label for="PatchSizeX" class="form-label">Patch-Size Sharpness: X</label>
+        <input type="number" class="form-control" id="PatchSizeX" name="PatchSizeX" value="5" min="1" max="100">
+      </div>
+      <div class="card-body mt-2 mb-2">
+        <label for="PatchSizeY" class="form-label">Patch-Size Sharpness: Y</label>
+        <input type="number" class="form-control" id="PatchSizeY" name="PatchSizeY" value="5" min="1" max="100">
+      </div>
+      <div class="card-body mt-2 mb-2">
+        <label for="ImgResize" class="form-label">Image Resize</label>
+        <input type="number" class="form-control" id="ImgResize" name="ImgResize" value="1" min="0.01" max="100" step="0.01">
+      </div>
+      <div class="card-body mt-2 mb-2">
+        <label for="z_spacing" class="form-label">Z-Spacing</label>
+        <input type="number" class="form-control" id="z_spacing" name="z_spacing" value="1" min="0.01" max="100" step="0.01">
+      </div>
 
-        <div class="card-body mt-2 mb-2">
-            <label for="images" class="form-label">Patch-Size Sharpness: Y</label>
-            <input type="number" class="form-control" id="PatchSizeY" name="PatchSizeY" value="5" min="1" max="100">
-        </div>
-
-        <div class="card-body mt-2 mb-2">
-            <label for="images" class="form-label">Image Resize</label>
-            <input type="number" class="form-control" id="ImgResize" name="ImgResize" value="1" min="1" max="100">
-        </div>
-
-        <div class="card-body mt-2 mb-2">
-            <label for="images" class="form-label">Z-Spacing</label>
-            <input type="number" class="form-control" id="z_spacing" name="z_spacing" value="1" min="1" max="100">
-        </div>
-
-        <div class="card-body mt-2 mb-2 text-end">
-            <button type="submit" class="btn btn-primary" name="action" value="save">Save</button>
-            <button type="submit" class="btn btn-primary" name="action" value="save_run">Save & Run</button>
-        </div>
+      <div class="card-body mt-2 mb-2 text-end">
+        <a href="{{ url_for('web.index') }}" class="btn btn-secondary">Abbrechen</a>
+        <button type="submit" class="btn btn-primary" name="action" value="save">Save</button>
+        <button type="submit" class="btn btn-primary" name="action" value="save_run">Save & Run</button>
+      </div>
     </div>
-</form>
-
-
-
-
+  </form>
 </div>
+
+<!-- Plain JS: Upload mit XHR für Fortschritt -->
+<script>
+(function () {
+  const input    = document.getElementById('images');
+  const btn      = document.getElementById('btn-upload');
+  const wrap     = document.getElementById('upload-progress-wrap');
+  const bar      = document.getElementById('upload-progress');
+  const list     = document.getElementById('uploaded-list');
+  const hiddenId = document.getElementById('upload_id');
+  const hiddenPaths = document.getElementById('uploaded_paths');
+
+  function uuid() {
+    // simple client UUID
+    return 'xxxxxxxyxxxx'.replace(/[xy]/g, c => {
+      const r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8);
+      return v.toString(16);
+    });
+  }
+
+  btn.addEventListener('click', function () {
+    const files = input.files;
+    if (!files || files.length === 0) {
+      alert('Bitte zuerst Dateien auswählen.');
+      return;
+    }
+
+    // upload_id pro Session/Form
+    if (!hiddenId.value) hiddenId.value = uuid();
+
+    const formData = new FormData();
+    formData.append('upload_id', hiddenId.value);
+    for (let i = 0; i < files.length; i++) {
+      formData.append('images', files[i]); // mehrfacher Key "images"
+    }
+
+    // UI sperren + Progress zeigen
+    btn.disabled = true;
+    wrap.style.display = 'block';
+    bar.style.width = '0%';
+    bar.textContent = '0%';
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '{{ url_for("web.upload_temp") }}', true);
+
+    xhr.upload.onprogress = function (e) {
+      if (e.lengthComputable) {
+        const percent = Math.round((e.loaded / e.total) * 100);
+        bar.style.width = percent + '%';
+        bar.textContent = percent + '%';
+      }
+    };
+    xhr.onerror = function () {
+      alert('Upload fehlgeschlagen.');
+      btn.disabled = false;
+    };
+    xhr.onload = function () {
+      btn.disabled = false;
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try {
+          const resp = JSON.parse(xhr.responseText);
+          if (resp && resp.paths) {
+            // Pfade in Hidden-Feld speichern (JSON)
+            hiddenPaths.value = JSON.stringify(resp.paths);
+
+            // Liste anzeigen
+            list.innerHTML = '';
+            resp.paths.forEach(p => {
+              const li = document.createElement('li');
+              li.textContent = p;
+              list.appendChild(li);
+            });
+            list.style.display = 'block';
+
+            // optional: File-Input leeren
+            input.value = '';
+          } else {
+            alert('Server-Antwort ungültig.');
+          }
+        } catch (e) {
+          alert('Antwort konnte nicht gelesen werden.');
+        }
+      } else {
+        alert('Upload fehlgeschlagen (HTTP ' + xhr.status + ').');
+      }
+    };
+
+    xhr.send(formData);
+  });
+})();
+</script>
 
 {% endblock %}

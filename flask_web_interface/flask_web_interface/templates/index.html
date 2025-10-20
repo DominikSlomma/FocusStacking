@@ -3,94 +3,124 @@
 {% block main %}
 
 <div class="container-fluid px-4">
-    <h1 class="mt-4">Dashboard</h1>
-    <ol class="breadcrumb mb-4">
-        <li class="breadcrumb-item active">Dashboard</li>
-    </ol>
-    <div class="row">
-        <div class="col-xl-3 col-md-6">
-            <div class="card bg-primary text-white mb-4">
+  <h1 class="mt-4">Dashboard</h1>
+  <ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item active">Dashboard</li>
+  </ol>
 
-                <div class="card-footer d-flex align-items-center justify-content-between">
-                    <a class="small text-white fw-bold stretched-link" href="{{ url_for('new_project') }}" style="font-weight: bold; font-size: 28px; text-decoration: none ;">New Project</a>
-                    <div class="text-white"><i class="fas fa-angle-right"></i></div>
-                </div>
-            </div>
+  <!-- Top-Actions -->
+  <div class="row g-3 align-items-stretch mb-4">
+    <div class="col-12 col-md-6 col-lg-4">
+      <div class="card bg-primary text-white h-100">
+        <div class="card-footer d-flex align-items-center justify-content-between">
+          <a class="text-white fw-bold stretched-link"
+             href="{{ url_for('web.new_project') }}"
+             style="text-decoration:none;">New Project</a>
+          <div class="text-white"><i class="fas fa-angle-right"></i></div>
         </div>
-        <!--
-        <div class="col-xl-3 col-md-6">
-            <div class="card bg-warning text-white mb-4">
-                <div class="card-body">Warning Card</div>
-                <div class="card-footer d-flex align-items-center justify-content-between">
-                    <a class="small text-white stretched-link" href="#">View Details</a>
-                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="card bg-success text-white mb-4">
-                <div class="card-body">Success Card</div>
-                <div class="card-footer d-flex align-items-center justify-content-between">
-                    <a class="small text-white stretched-link" href="#">View Details</a>
-                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="card bg-danger text-white mb-4">
-                <div class="card-body">Danger Card</div>
-                <div class="card-footer d-flex align-items-center justify-content-between">
-                    <a class="small text-white stretched-link" href="#">View Details</a>
-                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                </div>
-            </div>
-        </div>
-        -->
-    </div>
-    <div class="row">
-        {% for i in range(session.projectnames | length) %}
-          {% set name = session.projectnames[i] %}
-          {% set stat = session.status[i] %}
-        <div class="container-fluid">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <i class="fas fa-chart-bar me-1"></i>
-                    Project {{ name }}
-                </div>
-                <div class="card-body">
-                    <!-- Flex Container: links Projektname + Button, rechts Status -->
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="d-flex align-items-center">
-                        <h5 class="mb-0 me-3">{{ name  }}</h5>
-                        <form method="POST" action="{{ url_for('open_project') }}">
-                                <button type="submit" class="btn btn-primary" name="projectname" value="{{ name }}">Open</button>
-                        </form>
-                        </div>
-                        <h5 class="mb-0">
-                      <span class="status-dot
-                        {% if stat == 'init' %}status-notstarted
-                        {% elif stat == 'running' %}status-running
-                        {% elif stat == 'stopped' %}status-stopped
-                        {% endif %} ms-2">
-                      </span>
-                          Status:
-                      {% if stat == 'init' %}
-                        Not Started
-                      {% elif stat == 'running' %}
-                        Running
-                      {% elif stat == 'stopped' %}
-                        Stopped
-                      {% endif %}
-                    </h5>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-
-
+      </div>
     </div>
 
+    <!-- Sortierung -->
+    <div class="col-12 col-md-6 col-lg-8 d-flex justify-content-md-end">
+      <form method="get" action="{{ url_for('web.index') }}" class="ms-auto" style="max-width:360px; width:100%;">
+        <div class="input-group">
+          <label class="input-group-text" for="sortselect">Sort</label>
+          {% set cur = request.args.get('sortdir', 'name:asc') %}
+          <select class="form-select" id="sortselect" name="sortdir" onchange="this.form.submit()">
+            <option value="name:asc"     {{ 'selected' if cur=='name:asc' }}>Name ↑</option>
+            <option value="name:desc"    {{ 'selected' if cur=='name:desc' }}>Name ↓</option>
+            <option value="created:asc"  {{ 'selected' if cur=='created:asc' }}>Date ↑</option>
+            <option value="created:desc" {{ 'selected' if cur=='created:desc' }}>Date ↓</option>
+          </select>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Projekte -->
+  {% set n = items|length if items is defined else 0 %}
+  {% if n == 0 %}
+    <div class="alert alert-info d-flex align-items-center" role="alert">
+      <i class="fas fa-info-circle me-2"></i>
+      <div>No Projects exist. Create a <a href="{{ url_for('web.new_project') }}" class="alert-link">project</a>.</div>
+    </div>
+  {% else %}
+    <div class="row">
+      {% for p in items %}
+        <div class="col-12">
+          <div class="card mb-4">
+            <div class="card-header d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center">
+                <i class="fas fa-folder-open me-2"></i>
+                <span class="fw-semibold">Project</span>
+                <span class="ms-2 text-muted">{{ p.slug }}</span>
+              </div>
+
+              {# Status-Badge oben rechts #}
+              {% set st = (p.status or '').strip().lower() %}
+              <div>
+                <span id="badge-{{ p.slug }}">
+                  {% if st == 'running' %}
+                    <span class="badge bg-warning text-dark">Running</span>
+                  {% elif st == 'done' %}
+                    <span class="badge bg-success">Done</span>
+                  {% elif st == 'failed' %}
+                    <span class="badge bg-danger">Failed</span>
+                  {% elif st in ['not started', 'not_started', 'init', ''] %}
+                    <span class="badge bg-dark">Not Started</span>
+                  {% else %}
+                    <span class="badge bg-dark">{{ p.status }}</span>
+                  {% endif %}
+                </span>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <div class="d-flex align-items-center justify-content-between flex-wrap">
+                <!-- LINKS: Name + Buttons (Open/Delete) nebeneinander -->
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                  <h5 class="mb-0 me-2 text-truncate" style="max-width:40vw">{{ p.name }}</h5>
+
+                  <!-- Open -->
+                  <form method="POST" action="{{ url_for('web.open_project') }}" class="d-inline">
+                    <button type="submit" class="btn btn-primary btn-sm" name="projectname" value="{{ p.slug }}">
+                      Edit
+                    </button>
+                  </form>
+
+                  <!-- Delete -->
+                  <form method="POST" action="{{ url_for('web.delete') }}" class="d-inline"
+                        onsubmit="return confirm('Do you really want to delete {{ p.name|e }}? This process cannot be undone.');">
+                    <input type="hidden" name="next" value="{{ request.full_path or url_for('web.index') }}">
+                    <button type="submit" class="btn btn-danger btn-sm" name="projectname" value="{{ p.slug }}">
+                      Delete
+                    </button>
+                  </form>
+                </div>
+
+                <!-- RECHTS: Status-Text (wird per JS aktualisiert, inkl. % bei Running) -->
+                <div class="text-muted small" id="statustext-{{ p.slug }}" style="white-space:nowrap;">
+                  {% if st == 'running' %}
+                    Status: Running
+                  {% elif st == 'done' %}
+                    Status: Done
+                  {% elif st == 'failed' %}
+                    Status: Failed
+                  {% elif st in ['not started', 'not_started', 'init', ''] %}
+                    Status: Not Started
+                  {% else %}
+                    Status: {{ p.status }}
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
 
 </div>
 
