@@ -36,6 +36,7 @@ RUN cp -r /tmp/FocusStacking/fs_backend/* /home/ws/src/fs_backend/
 RUN cp /tmp/FocusStacking/update.sh /home/ws/
 
 
+
 RUN rm -r  /tmp/FocusStacking
 
 WORKDIR /home/ws

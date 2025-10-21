@@ -18,6 +18,8 @@ public:
     /// Construct with optional NodeOptions (namespaces, remaps, etc.).
     explicit SystemNode(const rclcpp::NodeOptions& options = rclcpp::NodeOptions());
 
+    ~SystemNode() override;  // add this
+
 private:
     // --- Pub/Sub + worker bits ---
     rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr progress_pub_;  // progress topic (kept small and reliable)

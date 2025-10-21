@@ -77,4 +77,11 @@ SystemNode::SystemNode(const rclcpp::NodeOptions& options)
     RCLCPP_INFO(this->get_logger(), "All done — processing finished.");
 }
 
+SystemNode::~SystemNode() {
+    if (system_) {
+        system_->progress_callback_ = nullptr; // don’t keep a lambda that captures `this`
+    }
+    progress_pub_.reset(); // drop publisher before rclcpp shuts down
+}
+
 } // namespace fost
